@@ -1,4 +1,4 @@
-
+import {cart} from '../data/cart.js'
 
 
 
@@ -28,7 +28,7 @@ products.forEach( (product) =>{
           </div>
 
           <div class="product-quantity-container">
-            <select>
+            <select class="js-quantity-selector-${product.id}">
               <option selected value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -44,7 +44,7 @@ products.forEach( (product) =>{
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart">
+          <div class="added-to-cart js-added-to-cart-${product.id}">
             <img src="images/icons/checkmark.png">
             Added
           </div>
@@ -57,12 +57,27 @@ products.forEach( (product) =>{
 
    `
 })
+
 document.querySelector('.js-products-grid').innerHTML = productsHtml
 document.querySelectorAll('.js-add-to-cart')
 .forEach((button) =>{
   button.addEventListener('click',() =>{
     const productId = button.dataset.productId;
+    const addedElement = document.querySelector(`.js-added-to-cart-${productId}`)
+    let quantitySelected = document.querySelector(`.js-quantity-selector-${productId}`).value;
+    const quantityValue =  Number(quantitySelected)
+  
+   
+    addedElement.classList.add('added-message')
+    let setTimeoutId  = setTimeout(() => {
+      addedElement.classList.remove('added-message');
+    }, 1000);
     
+  setTimeout(() => {
+  clearTimeout(setTimeoutId); // cancel it after 2 sec
+  console.log("Timeout cancelled");
+}, 2000);
+
     let matchingItem;
     cart.forEach((item) =>{
         if(productId === item.productId){
@@ -71,19 +86,22 @@ document.querySelectorAll('.js-add-to-cart')
     })
     
     if(matchingItem){
-      matchingItem.quantity += 1
+      matchingItem.quantity += quantityValue
     }else{
       cart.push({
       productId:productId,
-      quantity:1
+      quantity:quantityValue
     });
     }
     let cartQuantity = 0
    cart.forEach((item) =>{
         cartQuantity += item.quantity
+        console.log(`${item.productId} ${item.quantity}`)
    })
    document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
-  
+   
+
   })
 })
+
 
