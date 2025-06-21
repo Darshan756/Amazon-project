@@ -1,6 +1,5 @@
-import {cart} from '../data/cart.js'
-
-
+import {cart , addToCart} from '../data/cart.js'
+import { products } from '../data/products.js';
 
 let productsHtml = '';
 products.forEach( (product) =>{
@@ -57,18 +56,21 @@ products.forEach( (product) =>{
 
    `
 })
-
 document.querySelector('.js-products-grid').innerHTML = productsHtml
-document.querySelectorAll('.js-add-to-cart')
-.forEach((button) =>{
-  button.addEventListener('click',() =>{
-    const productId = button.dataset.productId;
-    const addedElement = document.querySelector(`.js-added-to-cart-${productId}`)
-    let quantitySelected = document.querySelector(`.js-quantity-selector-${productId}`).value;
-    const quantityValue =  Number(quantitySelected)
-  
-   
-    addedElement.classList.add('added-message')
+
+function cartQuantity(){
+ let cartQuantity = 0
+   cart.forEach((cartItem) =>{
+        cartQuantity += cartItem.quantity
+        console.log(`${cartItem.productId} ${cartItem.quantity}`)
+   })
+   document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
+}
+
+
+function addedMessage(productId){
+  const addedElement = document.querySelector(`.js-added-to-cart-${productId}`)
+  addedElement.classList.add('added-message')
     let setTimeoutId  = setTimeout(() => {
       addedElement.classList.remove('added-message');
     }, 1000);
@@ -78,27 +80,15 @@ document.querySelectorAll('.js-add-to-cart')
   console.log("Timeout cancelled");
 }, 2000);
 
-    let matchingItem;
-    cart.forEach((item) =>{
-        if(productId === item.productId){
-           matchingItem = item;
-        }
-    })
-    
-    if(matchingItem){
-      matchingItem.quantity += quantityValue
-    }else{
-      cart.push({
-      productId:productId,
-      quantity:quantityValue
-    });
-    }
-    let cartQuantity = 0
-   cart.forEach((item) =>{
-        cartQuantity += item.quantity
-        console.log(`${item.productId} ${item.quantity}`)
-   })
-   document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
+}
+
+document.querySelectorAll('.js-add-to-cart')
+.forEach((button) =>{
+  button.addEventListener('click',() =>{
+    const productId = button.dataset.productId;
+    addToCart(productId)
+    addedMessage(productId)
+    cartQuantity()
    
 
   })
