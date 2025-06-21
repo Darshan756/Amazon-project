@@ -1,4 +1,5 @@
-import { cart } from "../data/cart.js";
+import { cart,deleteFromCart } from "../data/cart.js";
+import {formateCurrency} from "./utils/money.js"
 import { products } from "../data/products.js";
 
 const orderSummaryHtml = document.querySelector('.order-summary');
@@ -6,7 +7,6 @@ let checkoutCartHtml = '';
 
 cart.forEach((cartItem) => {
  let matchingProduct = products.find((product) => product.id === cartItem.productId)
-let totalPrice = (matchingProduct.priceCents/100).toFixed(2)
 checkoutCartHtml += `
     <div class="cart-item-container">
       <div class="delivery-date">
@@ -22,7 +22,7 @@ checkoutCartHtml += `
             ${matchingProduct.name}
           </div>
           <div class="product-price">
-            $${totalPrice}
+            $${formateCurrency(matchingProduct.priceCents)}
           </div>
           <div class="product-quantity">
             <span>
@@ -31,7 +31,7 @@ checkoutCartHtml += `
             <span class="update-quantity-link link-primary">
               Update
             </span>
-            <span class="delete-quantity-link link-primary">
+            <span class="delete-quantity-link link-primary js-delete-link " data-product-id ="${cartItem.productId}">
               Delete
             </span>
           </div>
@@ -83,3 +83,11 @@ checkoutCartHtml += `
 
 
 orderSummaryHtml.innerHTML = checkoutCartHtml;
+document.querySelectorAll('.js-delete-link').forEach((link) =>{
+    link.addEventListener('click',() =>{
+            let productId = link.dataset.productId
+                deleteFromCart(productId)
+                console.log(cart)
+    })
+})
+console.log(cart)
